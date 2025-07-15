@@ -1,3 +1,4 @@
+edited by develop2
 GitLabとGitHubはどちらも人気のあるGitベースのソースコード管理・コラボレーションプラットフォームですが、関係や違い、使い方の違いは以下の通りです。
 
 ---
@@ -37,9 +38,3 @@ GitLabとGitHubはどちらも人気のあるGitベースのソースコード�
 
 **まとめ：**  
 GitHubはオープンソースやパブリックな協業に最適、GitLabは企業内やプライベートなDevOps全体管理に強みがあります。基本的な使い方は似ていますが、CI/CDや権限管理など細かい部分で違いがあります。
-
-
-git clone https://github.com/suzhen-copilot/GitHubActionsTest.git
-git add .github
-git commit -m "Add .github workflows"
-git push origin main
