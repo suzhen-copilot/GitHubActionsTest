@@ -1,0 +1,14 @@
+name: Docker Build and Push to ECR
+
+on:
+  workflow_dispatch:
+  workflow_run:
+    workflows: ["PRs Merged Checker"]
+    types:
+      - completed
+
+jobs:
+  echo_hello_world:
+    runs-on: self-hosted
+    steps:
+      - run: echo "hello world!! PRs Merged!!"
