@@ -1,3 +1,4 @@
+edited by develop1 develop1
 GitLabとGitHubはどちらも人気のあるGitベースのソースコード管理・コラボレーションプラットフォームですが、関係や違い、使い方の違いは以下の通りです。
 
 ---
