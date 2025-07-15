@@ -1,0 +1,12 @@
+name: GitHub Actions Demo
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  echo_hello_world:
+    runs-on: self-hosted
+    steps:
+      - run: echo "hello world!!"
