@@ -4,8 +4,7 @@ on:
   pull_request:
     types: [closed]
     branches:
-      - develop1
-      - develop2
+      - main
 
 jobs:
   echo_jobs_start:
@@ -15,16 +14,16 @@ jobs:
   check-prs-merged:
     runs-on: self-hosted
     steps:
-      - name: Check if PR is merged
-        if: github.event.pull_request.merged == true
+      - name: Check if PR is merged from develop1 or develop2
+        if: github.event.pull_request.merged == true && (github.event.pull_request.head.ref == 'develop1' || github.event.pull_request.head.ref == 'develop2')
         run: |
-          echo "PR to ${GITHUB_REF##*/} merged."
+          echo "PR from ${GITHUB_HEAD_REF} merged to main."
       - name: Set merged flag
-        if: github.event.pull_request.merged == true
+        if: github.event.pull_request.merged == true && (github.event.pull_request.head.ref == 'develop1' || github.event.pull_request.head.ref == 'develop2')
         run: |
-          echo "${GITHUB_REF##*/}" > merged_branch.txt
+          echo "${GITHUB_HEAD_REF}" > merged_branch.txt
       - name: Upload merged branch artifact
-        if: github.event.pull_request.merged == true
+        if: github.event.pull_request.merged == true && (github.event.pull_request.head.ref == 'develop1' || github.event.pull_request.head.ref == 'develop2')
         uses: actions/upload-artifact@v3
         with:
           name: merged-branch
@@ -42,7 +41,7 @@ jobs:
       - name: Check both branches merged
         id: check
         run: |
-          git fetch origin develop1 develop2
+          git fetch origin develop1 develop2 main
           # Check if both develop1 and develop2 have been merged into main
           if git merge-base --is-ancestor origin/develop1 origin/main && \
              git merge-base --is-ancestor origin/develop2 origin/main; then
@@ -56,5 +55,6 @@ jobs:
         with:
           workflow: docker-build-push.yml
 
-# このワークフローは develop1 または develop2 の PR がマージされたときに発火します。
-# develop1 と develop2 の両方が main にマージされているかをチェックし、条件を満たせば docker-build-push.yml をトリガーします。
+# このワークフローは main ブランチへの PR がマージされたときに発火します。
+# develop1 または develop2 から main へのマージを検出し、
+# 両方のブランチがマージされている場合に docker-build-push.yml をトリガーします。
