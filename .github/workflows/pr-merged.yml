@@ -54,11 +54,11 @@ jobs:
           else
             echo "both_merged=false" >> $GITHUB_OUTPUT
           fi
-      - name: Trigger Docker Build and Push workflow
+      - name: Docker Build and Push
         if: steps.check_flags.outputs.both_merged == 'true'
-        uses: benc-uk/workflow-dispatch@v1
-        with:
-          workflow: docker-build-push.yml
+        run: |
+           echo "Docker のビルドおよびプッシュジョブを開始します！"
+                # ここに実際の docker build/push コマンドを追加してください
       - name: Cleanup merged flags
         if: steps.check_flags.outputs.both_merged == 'true'
         run: |
