@@ -70,5 +70,5 @@ jobs:
           git push
 
 # このワークフローは main ブランチへの PR がマージされたときに発火します。
-# develop1 または develop2 から main へのマージを検出し、
+# develop1 または develop2 から main へのマージを検出し、 
 # 両方のブランチがマージされている場合に docker-build-push.yml をトリガーします。
