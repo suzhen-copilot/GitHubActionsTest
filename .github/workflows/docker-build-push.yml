@@ -8,7 +8,7 @@ on:
       - completed
 
 jobs:
-  echo_hello_world:
+  echo_docker_build_push:
     runs-on: self-hosted
     steps:
-      - run: echo "hello world! PRs Merged!"
+      - run: echo "Docker build and push jobs have been started!"
