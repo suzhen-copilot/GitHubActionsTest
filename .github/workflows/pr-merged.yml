@@ -50,16 +50,21 @@ jobs:
         id: check_flags
         shell: bash
         run: |
+          echo "GITHUB_OUTPUT=$GITHUB_OUTPUT"
           if [ -f .github/merged_flags/develop1_merged.flag ] && [ -f .github/merged_flags/develop2_merged.flag ]; then
             echo "both_merged=true" >> $GITHUB_OUTPUT
+            echo "Flag files exist, both_merged=true"
           else
             echo "both_merged=false" >> $GITHUB_OUTPUT
+            echo "Flag files missing, both_merged=false"
           fi
+      - name: Show output for debug
+        run: echo "both_merged is ${{ steps.check_flags.outputs.both_merged }}"
       - name: Docker Build and Push
         if: steps.check_flags.outputs.both_merged == 'true'
         run: |
-           echo "Docker のビルドおよびプッシュジョブを開始します！"
-           # ここに実際の docker build/push コマンドを追加してください 
+          echo "Docker のビルドおよびプッシュジョブを開始します！"
+          # ここに実際の docker build/push コマンドを追加してください 
       - name: Cleanup merged flags
         if: steps.check_flags.outputs.both_merged == 'true'
         run: |
