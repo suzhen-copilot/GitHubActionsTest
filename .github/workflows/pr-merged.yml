@@ -58,7 +58,7 @@ jobs:
         if: steps.check_flags.outputs.both_merged == 'true'
         run: |
            echo "Docker のビルドおよびプッシュジョブを開始します！"
-                # ここに実際の docker build/push コマンドを追加してください
+                # ここに実際の docker build/push コマンドを追加してください 
       - name: Cleanup merged flags
         if: steps.check_flags.outputs.both_merged == 'true'
         run: |
