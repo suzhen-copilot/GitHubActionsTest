@@ -24,7 +24,7 @@ jobs:
           echo "${GITHUB_HEAD_REF}" > merged_branch.txt
       - name: Upload merged branch artifact
         if: github.event.pull_request.merged == true && (github.event.pull_request.head.ref == 'develop1' || github.event.pull_request.head.ref == 'develop2')
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: merged-branch
           path: merged_branch.txt
@@ -34,7 +34,7 @@ jobs:
     runs-on: self-hosted
     steps:
       - name: Download merged branch artifacts
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: merged-branch
           path: ./artifacts
