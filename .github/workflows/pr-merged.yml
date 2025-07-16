@@ -46,6 +46,11 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Pull latest main
+        run: |
+          git pull origin main
       - name: Check both branches merged flag
         id: check_flags
         shell: bash
