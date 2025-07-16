@@ -11,4 +11,4 @@ jobs:
   echo_hello_world:
     runs-on: self-hosted
     steps:
-      - run: echo "hello world!! PRs Merged!!"
+      - run: echo "hello world! PRs Merged!"
