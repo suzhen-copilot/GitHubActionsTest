@@ -8,8 +8,12 @@ on:
       - develop2
 
 jobs:
+  echo_jobs_start:
+    runs-on: self-hosted
+    steps:
+      - run: echo "jobs started!!"
   check-prs-merged:
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     steps:
       - name: Check if PR is merged
         if: github.event.pull_request.merged == true
@@ -28,7 +32,7 @@ jobs:
 
   trigger-docker-build:
     needs: check-prs-merged
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     steps:
       - name: Download merged branch artifacts
         uses: actions/download-artifact@v3
