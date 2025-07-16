@@ -6,6 +6,9 @@ on:
     branches:
       - main
 
+permissions:
+  contents: write
+
 jobs:
   echo_jobs_start:
     runs-on: self-hosted
@@ -14,6 +17,8 @@ jobs:
   check-prs-merged:
     runs-on: self-hosted
     steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
       - name: Check if PR is merged from develop1 or develop2
         if: github.event.pull_request.merged == true && (github.event.pull_request.head.ref == 'develop1' || github.event.pull_request.head.ref == 'develop2')
         run: |
