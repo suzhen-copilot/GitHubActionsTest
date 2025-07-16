@@ -10,7 +10,7 @@ jobs:
   echo_jobs_start:
     runs-on: self-hosted
     steps:
-      - run: echo "jobs started!"
+      - run: echo "jobs have been started!"
   check-prs-merged:
     runs-on: self-hosted
     steps:
