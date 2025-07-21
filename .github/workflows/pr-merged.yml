@@ -26,7 +26,7 @@ jobs:
       - name: Set merged flag file and push
         if: github.event.pull_request.merged == true && (github.event.pull_request.head.ref == 'develop1' || github.event.pull_request.head.ref == 'develop2')
         run: |
-          mkdir -p .github/merged_flags
+          [ -d .github/merged_flags ] || mkdir -p .github/merged_flags
           if [ "${GITHUB_HEAD_REF}" = "develop1" ]; then
             echo "merged" > .github/merged_flags/develop1_merged.flag
           elif [ "${GITHUB_HEAD_REF}" = "develop2" ]; then
@@ -36,6 +36,7 @@ jobs:
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git add .github/merged_flags/
           git commit -m "Set merged flag for ${GITHUB_HEAD_REF}" || echo "No changes to commit"
+          git pull --rebase origin main
           git push
       - name: Checkout repository
         uses: actions/checkout@v4
