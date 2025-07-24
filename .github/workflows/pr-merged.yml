@@ -11,11 +11,11 @@ permissions:
 
 jobs:
   echo_jobs_start:
-    runs-on: self-hosted
+    runs-on: ubuntu-latest
     steps:
       - run: echo "jobs have been started!"
   check-prs-merged:
-    runs-on: self-hosted
+    runs-on: ubuntu-latest
     steps:
       - name: Verify Git installation
         run: |
@@ -46,7 +46,7 @@ jobs:
 
   trigger-docker-build:
     needs: check-prs-merged
-    runs-on: self-hosted
+    runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
