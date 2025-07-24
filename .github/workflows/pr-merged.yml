@@ -17,6 +17,9 @@ jobs:
   check-prs-merged:
     runs-on: self-hosted
     steps:
+      - name: Verify Git installation
+        run: |
+          git --version
       - name: Checkout repository
         uses: actions/checkout@v4
       - name: Check if PR is merged from develop1 or develop2
@@ -69,6 +72,7 @@ jobs:
       - name: Docker Build and Push
         if: steps.check_flags.outputs.both_merged == 'true'
         run: |
+          docker --version
           echo "Docker のビルドおよびプッシュジョブを開始します！"
           # ここに実際の docker build/push コマンドを追加してください 
       - name: Cleanup merged flags
