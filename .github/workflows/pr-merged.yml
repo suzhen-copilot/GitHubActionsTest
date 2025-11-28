@@ -6,57 +6,85 @@ on:
     branches:
       - main
 
+permissions:
+  contents: write
+
 jobs:
   echo_jobs_start:
-    runs-on: self-hosted
+    runs-on: ubuntu-latest
     steps:
       - run: echo "jobs have been started!"
   check-prs-merged:
-    runs-on: self-hosted
+    runs-on: ubuntu-latest
     steps:
+      - name: Verify Git installation
+        run: |
+          git --version
+      - name: Checkout repository
+        uses: actions/checkout@v4
       - name: Check if PR is merged from develop1 or develop2
         if: github.event.pull_request.merged == true && (github.event.pull_request.head.ref == 'develop1' || github.event.pull_request.head.ref == 'develop2')
         run: |
           echo "PR from ${GITHUB_HEAD_REF} merged to main."
-      - name: Set merged flag
+      - name: Set merged flag file and push
         if: github.event.pull_request.merged == true && (github.event.pull_request.head.ref == 'develop1' || github.event.pull_request.head.ref == 'develop2')
         run: |
-          echo "${GITHUB_HEAD_REF}" > merged_branch.txt
-      - name: Upload merged branch artifact
-        if: github.event.pull_request.merged == true && (github.event.pull_request.head.ref == 'develop1' || github.event.pull_request.head.ref == 'develop2')
-        uses: actions/upload-artifact@v4
-        with:
-          name: merged-branch
-          path: merged_branch.txt
+          [ -d .github/merged_flags ] || mkdir -p .github/merged_flags
+          if [ "${GITHUB_HEAD_REF}" = "develop1" ]; then
+            echo "merged" > .github/merged_flags/develop1_merged.flag
+          elif [ "${GITHUB_HEAD_REF}" = "develop2" ]; then
+            echo "merged" > .github/merged_flags/develop2_merged.flag
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add .github/merged_flags/
+          git commit -m "Set merged flag for ${GITHUB_HEAD_REF}" || echo "No changes to commit"
+          git pull --rebase origin main
+          git push
+      - name: Checkout repository
+        uses: actions/checkout@v4
 
   trigger-docker-build:
     needs: check-prs-merged
-    runs-on: self-hosted
+    runs-on: ubuntu-latest
     steps:
-      - name: Download merged branch artifacts
-        uses: actions/download-artifact@v4
-        with:
-          name: merged-branch
-          path: ./artifacts
       - name: Checkout repository
         uses: actions/checkout@v4
-      - name: Check both branches merged
-        id: check
+        with:
+          fetch-depth: 0
+      - name: Pull latest main
         run: |
-          git fetch origin develop1 develop2 main
-          # Check if both develop1 and develop2 have been merged into main
-          if git merge-base --is-ancestor origin/develop1 origin/main && \
-             git merge-base --is-ancestor origin/develop2 origin/main; then
+          git pull origin main
+      - name: Check both branches merged flag
+        id: check_flags
+        shell: bash
+        run: |
+          echo "GITHUB_OUTPUT=$GITHUB_OUTPUT"
+          if [ -f .github/merged_flags/develop1_merged.flag ] && [ -f .github/merged_flags/develop2_merged.flag ]; then
             echo "both_merged=true" >> $GITHUB_OUTPUT
+            echo "Flag files exist, both_merged=true"
           else
             echo "both_merged=false" >> $GITHUB_OUTPUT
+            echo "Flag files missing, both_merged=false"
           fi
-      - name: Trigger Docker Build and Push workflow
-        if: steps.check.outputs.both_merged == 'true'
-        uses: benc-uk/workflow-dispatch@v1
-        with:
-          workflow: docker-build-push.yml
+      - name: Show output for debug
+        run: echo "both_merged is ${{ steps.check_flags.outputs.both_merged }}"
+      - name: Docker Build and Push
+        if: steps.check_flags.outputs.both_merged == 'true'
+        run: |
+          docker --version
+          echo "Docker のビルドおよびプッシュジョブを開始します！"
+          # ここに実際の docker build/push コマンドを追加してください 
+      - name: Cleanup merged flags
+        if: steps.check_flags.outputs.both_merged == 'true'
+        run: |
+          rm -f .github/merged_flags/develop1_merged.flag .github/merged_flags/develop2_merged.flag
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add .github/merged_flags/
+          git commit -m "Cleanup merged flags" || echo "No changes to commit"
+          git push
 
 # このワークフローは main ブランチへの PR がマージされたときに発火します。
-# develop1 または develop2 から main へのマージを検出し、
+# develop1 または develop2 から main へのマージを検出し、 
 # 両方のブランチがマージされている場合に docker-build-push.yml をトリガーします。
